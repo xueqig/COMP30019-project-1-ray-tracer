@@ -3,10 +3,10 @@ This is your README.md... you should write anything relevant to your implementat
 
 Please ensure your student details are specified below (*exactly* as on UniMelb records):
 
-**Name:** ... \
-**Student Number:** XXXXXXX \
-**Username:** ... \
-**Email:** ...@student.unimelb.edu.au
+**Name:** Xueqi Guan \
+**Student Number:** 1098403 \
+**Username:** xueqig \
+**Email:** xueqig@student.unimelb.edu.au
 
 ## Completed stages
 
