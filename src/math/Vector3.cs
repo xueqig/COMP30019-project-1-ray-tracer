@@ -41,7 +41,7 @@ namespace RayTracer
         public double LengthSq()
         {
             // Write your code here...
-            return 0;
+            return this.x * this.x + this.y * this.y + this.z * this.z;
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace RayTracer
         public double Length()
         {
             // Write your code here...
-            return 0;
+            return Math.Sqrt(this.LengthSq());
         }
 
         /// <summary>
@@ -61,7 +61,8 @@ namespace RayTracer
         public Vector3 Normalized()
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            double length = this.Length();
+            return new Vector3(this.x / length, this.y / length, this.z / length);
         }
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace RayTracer
         public double Dot(Vector3 with)
         {
             // Write your code here...
-            return 0;
+            return this.x * with.X + this.y * with.Y + this.z * with.Z;
         }
 
         /// <summary>
@@ -83,7 +84,10 @@ namespace RayTracer
         public Vector3 Cross(Vector3 with)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            double resultX = this.y * with.Z - this.z * with.Y;
+            double resultY = this.z * with.X - this.x * with.z;
+            double resultZ = this.x * with.Y - this.y * with.X;
+            return new Vector3(resultX, resultY, resultZ);
         }
 
         /// <summary>
@@ -95,7 +99,7 @@ namespace RayTracer
         public static Vector3 operator +(Vector3 a, Vector3 b)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
         }
 
         /// <summary>
@@ -106,7 +110,7 @@ namespace RayTracer
         public static Vector3 operator -(Vector3 a)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(-a.X, -a.Y, -a.Z);
         }
 
         /// <summary>
@@ -118,7 +122,7 @@ namespace RayTracer
         public static Vector3 operator -(Vector3 a, Vector3 b)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         }
 
         /// <summary>
@@ -130,7 +134,7 @@ namespace RayTracer
         public static Vector3 operator *(Vector3 a, double b)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X * b, a.Y * b, a.Z * b);
         }
 
         /// <summary>
@@ -142,7 +146,7 @@ namespace RayTracer
         public static Vector3 operator *(double b, Vector3 a)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X * b, a.Y * b, a.Z * b);
         }
 
         /// <summary>
@@ -154,7 +158,7 @@ namespace RayTracer
         public static Vector3 operator /(Vector3 a, double b)
         {
             // Write your code here...
-            return new Vector3(0, 0, 0);
+            return new Vector3(a.X / b, a.Y / b, a.Z / b);
         }
 
         /// <summary>
