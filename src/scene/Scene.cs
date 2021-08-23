@@ -60,7 +60,39 @@ namespace RayTracer
             {
                 outputImage.SetPixel(pid, white);
             }
+
+            // Stage 1.3
+            Vector3 origin = new Vector3(0, 0, 0);
+
+            // Relate pixel space to world space 
+            // Loop through the pixels and normalise the pixel space
+            for (int y = 0; y < outputImage.Height; y++)
+            {
+                for (int x = 0; x < outputImage.Width; x++)
+                {
+                    // Normalise the pixel space and pixels in the middles
+                    double pixelX = (x + 0.5) / outputImage.Width;
+                    double pixelY = (y + 0.5) / outputImage.Height;
+                    double pixelZ = 1.0;
+
+                    // Make it between -1 and 1
+                    pixelX = (pixelX * 2) - 1;
+                    pixelY = 1 - (pixelX * 2);
+
+                    // Apply fov = 60 degree to x and y
+                    // Scale y axis wrt the aspect ratio
+                    double aspectRatio = outputImage.Width / outputImage.Height;
+                    pixelX = pixelX * Math.Tan(Math.PI / 6);
+                    pixelY = pixelX * (Math.Tan(Math.PI / 6) / aspectRatio);
+
+                    Vector3 direction = new Vector3(pixelX, pixelY, pixelZ);
+
+                    Ray rayToPixel = new Ray(origin, direction);
+                }
+            }
         }
 
     }
 }
+
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
