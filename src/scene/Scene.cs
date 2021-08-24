@@ -60,6 +60,7 @@ namespace RayTracer
             // {
             //     outputImage.SetPixel(pid, white);
             // }
+
             // Stage 1.3 - Fire a ray to each pixel
             Vector3 origin = new Vector3(0, 0, 0);
 
@@ -88,7 +89,10 @@ namespace RayTracer
 
                     Ray ray = new Ray(origin, direction);
 
+                    // Console.WriteLine(ray.Direction);
+
                     outputImage.SetPixel(x, y, new Color(0, 0, 0));
+                    double t = 0;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
@@ -96,7 +100,13 @@ namespace RayTracer
                         {
                             // We got a hit with this entity!
                             // The colour of the entity is entity.Material.Color
-                            outputImage.SetPixel(x, y, entity.Material.Color);
+                            // Check if the entity is the first entity being hit
+                            double t1 = hit.Position.LengthSq();
+                            if (t == 0 || t1 < t)
+                            {
+                                outputImage.SetPixel(x, y, entity.Material.Color);
+                                t = t1;
+                            }
                         }
                     }
                 }
