@@ -80,7 +80,7 @@ namespace RayTracer
 
                     // Apply fov = 60 degree to x and y
                     // Scale y axis wrt the aspect ratio
-                    double aspectRatio = outputImage.Width / outputImage.Height;
+                    double aspectRatio = (double)outputImage.Width / outputImage.Height;
                     pixelX = pixelX * Math.Tan(Math.PI / 6);
                     pixelY = pixelY * (Math.Tan(Math.PI / 6) / aspectRatio);
 
