@@ -42,14 +42,14 @@ namespace RayTracer
                 return null;
             }
 
-            double d = Math.Sqrt(tc * tc - L.LengthSq());
-            if (d > this.radius)
+            double d2 = L.LengthSq() - tc * tc;
+            if (d2 > this.radius * this.radius)
             {
                 return null;
             }
 
             // Calculate intersection point
-            double t1c = Math.Sqrt(this.radius * this.radius - d * d);
+            double t1c = Math.Sqrt(this.radius * this.radius - d2);
             double t1 = tc - t1c;
             Vector3 position = origin + t1 * ray.Direction;
 
