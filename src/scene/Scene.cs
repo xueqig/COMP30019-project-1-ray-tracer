@@ -60,7 +60,6 @@ namespace RayTracer
             // {
             //     outputImage.SetPixel(pid, white);
             // }
-
             // Stage 1.3 - Fire a ray to each pixel
             Vector3 origin = new Vector3(0, 0, 0);
 
