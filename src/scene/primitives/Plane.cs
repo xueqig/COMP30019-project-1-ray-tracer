@@ -32,7 +32,20 @@ namespace RayTracer
         public RayHit Intersect(Ray ray)
         {
             // Write your code here...
-            return null;
+            // Check if the ray hit the plane
+            // If the ray is perpendicular to normal, it will not hit the plane
+            if (ray.Direction.Dot(this.normal) == 0)
+            {
+                return null;
+            }
+
+            // If the ray hit the plane
+            Vector3 origin = new Vector3(0, 0, 0);
+            double t = (this.center - origin).Dot(this.normal) / ray.Direction.Dot(this.normal);
+            // Calculate position of the hit
+            Vector3 position = origin + t * ray.Direction;
+
+            return new RayHit(position, this.normal, ray.Direction, this.material);
         }
 
         /// <summary>
