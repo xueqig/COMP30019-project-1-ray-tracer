@@ -84,8 +84,7 @@ namespace RayTracer
                     pixelX = pixelX * Math.Tan(Math.PI / 6);
                     pixelY = pixelY * (Math.Tan(Math.PI / 6) / aspectRatio);
 
-                    Vector3 direction = new Vector3(pixelX, pixelY, pixelZ);
-                    direction = direction.Normalized();
+                    Vector3 direction = new Vector3(pixelX, pixelY, pixelZ).Normalized();
 
                     Ray ray = new Ray(origin, direction);
 
