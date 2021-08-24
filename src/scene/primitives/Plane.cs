@@ -34,7 +34,7 @@ namespace RayTracer
             // Write your code here...
             // Check if the ray hit the plane
             // If the ray is perpendicular to normal, it will not hit the plane
-            if (ray.Direction.Dot(this.normal) == 0)
+            if (ray.Direction.Dot(this.normal) == Double.Epsilon)
             {
                 return null;
             }
