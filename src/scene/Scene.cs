@@ -50,16 +50,16 @@ namespace RayTracer
         /// <param name="outputImage">Image to store render output</param>
         public void Render(Image outputImage)
         {
-            // Begin writing your code here...
-            int width = outputImage.Width;
-            int height = outputImage.Height;
-            int numPixels = width * height;
-            Color white = new Color(255, 255, 255);
+            // // Begin writing your code here...
+            // int width = outputImage.Width;
+            // int height = outputImage.Height;
+            // int numPixels = width * height;
+            // Color white = new Color(255, 255, 255);
 
-            for (int pid = 0; pid < numPixels; pid++)
-            {
-                outputImage.SetPixel(pid, white);
-            }
+            // for (int pid = 0; pid < numPixels; pid++)
+            // {
+            //     outputImage.SetPixel(pid, white);
+            // }
 
             // Stage 1.3 - Fire a ray to each pixel
             Vector3 origin = new Vector3(0, 0, 0);
@@ -77,17 +77,29 @@ namespace RayTracer
 
                     // Make it between -1 and 1
                     pixelX = (pixelX * 2) - 1;
-                    pixelY = 1 - (pixelX * 2);
+                    pixelY = 1 - (pixelY * 2);
 
                     // Apply fov = 60 degree to x and y
                     // Scale y axis wrt the aspect ratio
                     double aspectRatio = outputImage.Width / outputImage.Height;
                     pixelX = pixelX * Math.Tan(Math.PI / 6);
-                    pixelY = pixelX * (Math.Tan(Math.PI / 6) / aspectRatio);
+                    pixelY = pixelY * (Math.Tan(Math.PI / 6) / aspectRatio);
 
                     Vector3 direction = new Vector3(pixelX, pixelY, pixelZ);
 
-                    Ray rayToPixel = new Ray(origin, direction);
+                    Ray ray = new Ray(origin, direction);
+
+                    outputImage.SetPixel(x, y, new Color(0, 0, 0));
+                    foreach (SceneEntity entity in this.entities)
+                    {
+                        RayHit hit = entity.Intersect(ray);
+                        if (hit != null)
+                        {
+                            // We got a hit with this entity!
+                            // The colour of the entity is entity.Material.Color
+                            outputImage.SetPixel(x, y, entity.Material.Color);
+                        }
+                    }
                 }
             }
         }
