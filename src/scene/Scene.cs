@@ -109,24 +109,18 @@ namespace RayTracer
                                     Color color = entity.Material.Color * light.Color * hit.Normal.Dot(L);
                                     finalColor += color;
                                 }
-                                if (finalColor.R < 0)
-                                {
-                                    finalColor = new Color(0, finalColor.G, finalColor.B);
-                                }
-                                if (finalColor.G < 0)
-                                {
-                                    finalColor = new Color(finalColor.R, 0, finalColor.B);
-                                }
-                                if (finalColor.B < 0)
-                                {
-                                    finalColor = new Color(finalColor.R, finalColor.G, 0);
-                                }
+                                // finalColor = NormalizeColor(finalColor);
+                                finalColor = NormalizeColor(finalColor);
                                 outputImage.SetPixel(x, y, finalColor);
                             }
                         }
                     }
                 }
             }
+        }
+        private Color NormalizeColor(Color color)
+        {
+            return new Color(Math.Max(color.R, 0), Math.Max(color.G, 0), Math.Max(color.B, 0));
         }
 
     }
