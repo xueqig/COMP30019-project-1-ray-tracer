@@ -34,11 +34,12 @@ namespace RayTracer
             // Write your code here...
             // Check if the ray hit the plane
             // If the ray is perpendicular to normal, it will not hit the plane
-            if (Math.Abs(ray.Direction.Dot(this.normal)) > Double.Epsilon)
+            double denom = ray.Direction.Dot(this.normal);
+            if (Math.Abs(denom) > Double.Epsilon)
             {
                 // If the ray hit the plane
                 Vector3 origin = new Vector3(0, 0, 0);
-                double t = (this.center - origin).Dot(this.normal) / ray.Direction.Dot(this.normal);
+                double t = (this.center - origin).Dot(this.normal) / denom;
 
                 if (t < 0)
                 {

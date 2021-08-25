@@ -89,9 +89,8 @@ namespace RayTracer
 
                     Ray ray = new Ray(origin, direction);
 
-                    // Console.WriteLine(ray.Direction);
-
                     outputImage.SetPixel(x, y, new Color(0, 0, 0));
+                    double t = 0;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
@@ -100,14 +99,30 @@ namespace RayTracer
                             // We got a hit with this entity!
                             // The colour of the entity is entity.Material.Color
                             // Apply diffuse
-                            Color finalColor = new Color(0, 0, 0);
-                            foreach (PointLight light in this.lights)
+                            double t1 = hit.Position.LengthSq();
+                            if (t == 0 || t1 < t)
                             {
-                                Vector3 L = light.Position - hit.Position;
-                                Color color = entity.Material.Color * light.Color * hit.Normal.Dot(L);
-                                finalColor += color;
+                                Color finalColor = new Color(0, 0, 0);
+                                foreach (PointLight light in this.lights)
+                                {
+                                    Vector3 L = (light.Position - hit.Position).Normalized();
+                                    Color color = entity.Material.Color * light.Color * hit.Normal.Dot(L);
+                                    finalColor += color;
+                                }
+                                if (finalColor.R < 0)
+                                {
+                                    finalColor = new Color(0, finalColor.G, finalColor.B);
+                                }
+                                if (finalColor.G < 0)
+                                {
+                                    finalColor = new Color(finalColor.R, 0, finalColor.B);
+                                }
+                                if (finalColor.B < 0)
+                                {
+                                    finalColor = new Color(finalColor.R, finalColor.G, 0);
+                                }
+                                outputImage.SetPixel(x, y, finalColor);
                             }
-                            outputImage.SetPixel(x, y, finalColor);
                         }
                     }
                 }
