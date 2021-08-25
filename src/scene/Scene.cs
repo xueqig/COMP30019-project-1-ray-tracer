@@ -92,7 +92,6 @@ namespace RayTracer
                     // Console.WriteLine(ray.Direction);
 
                     outputImage.SetPixel(x, y, new Color(0, 0, 0));
-                    double t = 0;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
@@ -100,13 +99,15 @@ namespace RayTracer
                         {
                             // We got a hit with this entity!
                             // The colour of the entity is entity.Material.Color
-                            // Check if the entity is the first entity being hit
-                            double t1 = hit.Position.LengthSq();
-                            if (t == 0 || t1 < t)
+                            // Apply diffuse
+                            Color finalColor = new Color(0, 0, 0);
+                            foreach (PointLight light in this.lights)
                             {
-                                outputImage.SetPixel(x, y, entity.Material.Color);
-                                t = t1;
+                                Vector3 L = light.Position - hit.Position;
+                                Color color = entity.Material.Color * light.Color * hit.Normal.Dot(L);
+                                finalColor += color;
                             }
+                            outputImage.SetPixel(x, y, finalColor);
                         }
                     }
                 }
