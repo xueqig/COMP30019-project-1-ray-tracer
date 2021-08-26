@@ -90,29 +90,27 @@ namespace RayTracer
                     Ray ray = new Ray(origin, direction);
 
                     outputImage.SetPixel(x, y, new Color(0, 0, 0));
-                    double t = 0;
+                    // double t = 0;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
                         if (hit != null)
                         {
-                            // We got a hit with this entity!
-                            // The colour of the entity is entity.Material.Color
-                            // Apply diffuse
+                            // Ray hits the entity
                             double t1 = hit.Position.LengthSq();
-                            if (t == 0 || t1 < t)
+                            // if (t == 0 || t1 < t)
+                            // {
+                            Color finalColor = new Color(0, 0, 0);
+                            foreach (PointLight light in this.lights)
                             {
-                                Color finalColor = new Color(0, 0, 0);
-                                foreach (PointLight light in this.lights)
-                                {
-                                    Vector3 L = (light.Position - hit.Position).Normalized();
-                                    Color color = entity.Material.Color * light.Color * hit.Normal.Dot(L);
-                                    finalColor += color;
-                                }
-                                // finalColor = NormalizeColor(finalColor);
-                                finalColor = NormalizeColor(finalColor);
-                                outputImage.SetPixel(x, y, finalColor);
+                                Vector3 L = (light.Position - hit.Position).Normalized();
+                                // Apply diffuse
+                                Color color = entity.Material.Color * light.Color * hit.Normal.Normalized().Dot(L);
+                                finalColor += color;
                             }
+                            finalColor = NormalizeColor(finalColor);
+                            outputImage.SetPixel(x, y, finalColor);
+                            // }
                         }
                     }
                 }
