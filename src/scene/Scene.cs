@@ -97,16 +97,25 @@ namespace RayTracer
                         if (hit != null)
                         {
                             // Ray hits the entity
-                            double t1 = hit.Position.LengthSq();
+                            // double t1 = hit.Position.LengthSq();
                             // if (t == 0 || t1 < t)
                             // {
+
                             Color finalColor = new Color(0, 0, 0);
                             foreach (PointLight light in this.lights)
                             {
                                 Vector3 L = (light.Position - hit.Position).Normalized();
-                                // Apply diffuse
-                                Color color = entity.Material.Color * light.Color * hit.Normal.Normalized().Dot(L);
-                                finalColor += color;
+
+                                if (!lightIsBlocked(hit.Position, L, entity))
+                                {
+                                    // Apply diffuse
+                                    Color color = entity.Material.Color * light.Color * hit.Normal.Normalized().Dot(L);
+                                    finalColor += color;
+                                }
+                                else
+                                {
+                                    finalColor = new Color(1, 1, 0);
+                                }
                             }
                             finalColor = NormalizeColor(finalColor);
                             outputImage.SetPixel(x, y, finalColor);
@@ -119,6 +128,31 @@ namespace RayTracer
         private Color NormalizeColor(Color color)
         {
             return new Color(Math.Max(color.R, 0), Math.Max(color.G, 0), Math.Max(color.B, 0));
+        }
+
+        private Boolean lightIsBlocked(Vector3 position, Vector3 L, SceneEntity currentEntity)
+        {
+            Ray ray = new Ray(position, L);
+
+            ISet<SceneEntity> otherEntities = new HashSet<SceneEntity>();
+            foreach (SceneEntity entity in this.entities)
+            {
+                if (entity != currentEntity)
+                {
+                    otherEntities.Add(entity);
+                }
+            }
+
+            foreach (SceneEntity otherEntity in otherEntities)
+            {
+                RayHit hit = otherEntity.Intersect(ray);
+                if (hit != null)
+                {
+                    Console.WriteLine(position + ", " + currentEntity);
+                    return true;
+                }
+            }
+            return false;
         }
 
     }
