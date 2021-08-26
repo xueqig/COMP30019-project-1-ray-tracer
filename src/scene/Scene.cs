@@ -74,13 +74,16 @@ namespace RayTracer
                     Ray ray = RayToPixel(x, y, outputImage);
 
                     outputImage.SetPixel(x, y, black);
+                    double distanceSq = Double.MaxValue;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
-                        if (hit == null)
+                        // Check if object is hit and is first hit
+                        if (hit == null || hit.Position.LengthSq() > distanceSq)
                         {
                             continue;
                         }
+                        distanceSq = hit.Position.LengthSq();
 
                         Color finalColor = new Color(0, 0, 0);
                         foreach (PointLight light in this.lights)
