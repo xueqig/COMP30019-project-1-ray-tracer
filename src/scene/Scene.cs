@@ -63,6 +63,7 @@ namespace RayTracer
 
             // Stage 1.3 - Fire a ray to each pixel
             Vector3 origin = new Vector3(0, 0, 0);
+            Color black = new Color(0, 0, 0);
 
             // Relate pixel space to world space 
             // Loop through the pixels and normalise the pixel space
@@ -70,58 +71,27 @@ namespace RayTracer
             {
                 for (int x = 0; x < outputImage.Width; x++)
                 {
-                    // Normalise the pixel space and pixels in the middles
-                    double pixelX = (x + 0.5) / outputImage.Width;
-                    double pixelY = (y + 0.5) / outputImage.Height;
-                    double pixelZ = 1.0;
+                    Ray ray = RayToPixel(x, y, outputImage);
 
-                    // Make it between -1 and 1
-                    pixelX = (pixelX * 2) - 1;
-                    pixelY = 1 - (pixelY * 2);
-
-                    // Apply fov = 60 degree to x and y
-                    // Scale y axis wrt the aspect ratio
-                    double aspectRatio = (double)outputImage.Width / outputImage.Height;
-                    pixelX = pixelX * Math.Tan(Math.PI / 6);
-                    pixelY = pixelY * (Math.Tan(Math.PI / 6) / aspectRatio);
-
-                    Vector3 direction = new Vector3(pixelX, pixelY, pixelZ).Normalized();
-
-                    Ray ray = new Ray(origin, direction);
-
-                    outputImage.SetPixel(x, y, new Color(0, 0, 0));
-                    // double t = 0;
+                    outputImage.SetPixel(x, y, black);
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
-                        if (hit != null)
+                        if (hit == null)
                         {
-                            // Ray hits the entity
-                            // double t1 = hit.Position.LengthSq();
-                            // if (t == 0 || t1 < t)
-                            // {
-
-                            Color finalColor = new Color(0, 0, 0);
-                            foreach (PointLight light in this.lights)
-                            {
-                                Vector3 L = (light.Position - hit.Position).Normalized();
-
-                                if (!lightIsBlocked(hit.Position, L, entity))
-                                {
-                                    // Apply diffuse
-                                    Color color = entity.Material.Color * light.Color * hit.Normal.Normalized().Dot(L);
-                                    finalColor += color;
-                                }
-                                else
-                                {
-                                    finalColor = new Color(1, 1, 0);
-                                }
-                            }
-                            finalColor = NormalizeColor(finalColor);
-                            outputImage.SetPixel(x, y, finalColor);
-                            // }
+                            continue;
                         }
+
+                        Color finalColor = new Color(0, 0, 0);
+                        foreach (PointLight light in this.lights)
+                        {
+                            Vector3 L = (light.Position - hit.Position).Normalized();
+                            // Apply diffuse
+                            finalColor += entity.Material.Color * light.Color * hit.Normal.Normalized().Dot(L);
+                        }
+                        outputImage.SetPixel(x, y, NormalizeColor(finalColor));
                     }
+
                 }
             }
         }
@@ -130,32 +100,26 @@ namespace RayTracer
             return new Color(Math.Max(color.R, 0), Math.Max(color.G, 0), Math.Max(color.B, 0));
         }
 
-        private Boolean lightIsBlocked(Vector3 position, Vector3 L, SceneEntity currentEntity)
+        private Ray RayToPixel(int x, int y, Image outputImage)
         {
-            Ray ray = new Ray(position, L);
+            // Normalise the pixel space and pixels in the middles
+            double pixelX = (x + 0.5) / outputImage.Width;
+            double pixelY = (y + 0.5) / outputImage.Height;
+            double pixelZ = 1.0;
 
-            ISet<SceneEntity> otherEntities = new HashSet<SceneEntity>();
-            foreach (SceneEntity entity in this.entities)
-            {
-                if (entity != currentEntity)
-                {
-                    otherEntities.Add(entity);
-                }
-            }
+            // Make it between -1 and 1
+            pixelX = (pixelX * 2) - 1;
+            pixelY = 1 - (pixelY * 2);
 
-            foreach (SceneEntity otherEntity in otherEntities)
-            {
-                RayHit hit = otherEntity.Intersect(ray);
-                if (hit != null)
-                {
-                    Console.WriteLine(position + ", " + currentEntity);
-                    return true;
-                }
-            }
-            return false;
+            // Apply fov = 60 degree to x and y
+            // Scale y axis wrt the aspect ratio
+            double aspectRatio = (double)outputImage.Width / outputImage.Height;
+            pixelX = pixelX * Math.Tan(Math.PI / 6);
+            pixelY = pixelY * (Math.Tan(Math.PI / 6) / aspectRatio);
+
+            Vector3 direction = new Vector3(pixelX, pixelY, pixelZ).Normalized();
+
+            return new Ray(new Vector3(0, 0, 0), direction);
         }
-
     }
 }
-
-// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
