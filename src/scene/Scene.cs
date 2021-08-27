@@ -78,6 +78,7 @@ namespace RayTracer
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
+
                         // Check if object is hit and is first hit
                         if (hit == null || hit.Position.LengthSq() > distanceSq)
                         {
@@ -89,8 +90,12 @@ namespace RayTracer
                         foreach (PointLight light in this.lights)
                         {
                             Vector3 L = (light.Position - hit.Position).Normalized();
-                            // Apply diffuse
-                            finalColor += entity.Material.Color * light.Color * hit.Normal.Normalized().Dot(L);
+                            // Check if light is blocked
+                            if (!LightIsBlocked(hit.Position, light.Position, entity))
+                            {
+                                // Apply diffuse
+                                finalColor += entity.Material.Color * light.Color * hit.Normal.Dot(L);
+                            }
                         }
                         outputImage.SetPixel(x, y, NormalizeColor(finalColor));
                     }
@@ -98,6 +103,22 @@ namespace RayTracer
                 }
             }
         }
+
+        private Boolean LightIsBlocked(Vector3 hitPosition, Vector3 lightPosition, SceneEntity currentEntity)
+        {
+            Vector3 direction = (lightPosition - hitPosition).Normalized();
+            Ray ray = new Ray(hitPosition, direction);
+            foreach (SceneEntity entity in this.entities)
+            {
+                RayHit hit = entity.Intersect(ray);
+                if (hit != null && entity != currentEntity)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private Color NormalizeColor(Color color)
         {
             return new Color(Math.Max(color.R, 0), Math.Max(color.G, 0), Math.Max(color.B, 0));

@@ -45,8 +45,7 @@ namespace RayTracer
             }
 
             // If the ray hit the plane
-            Vector3 origin = new Vector3(0, 0, 0);
-            double t = (this.v0 - origin).Dot(normal) / rayDirectionDotNormal;
+            double t = (this.v0 - ray.Origin).Dot(normal) / rayDirectionDotNormal;
 
             // Check if triangle is in behind the ray
             if (t < 0)
@@ -55,7 +54,7 @@ namespace RayTracer
             }
 
             // Calculate position of the hit
-            Vector3 position = origin + t * ray.Direction;
+            Vector3 position = ray.Origin + t * ray.Direction;
 
             // Check if position of the hit is inside the triangle 
             // Barycentric coordinate system

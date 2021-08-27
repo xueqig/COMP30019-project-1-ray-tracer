@@ -38,8 +38,7 @@ namespace RayTracer
             if (Math.Abs(rayDirectionDotNormal) > Double.Epsilon)
             {
                 // If the ray hit the plane
-                Vector3 origin = new Vector3(0, 0, 0);
-                double t = (this.center - origin).Dot(this.normal) / rayDirectionDotNormal;
+                double t = (this.center - ray.Origin).Dot(this.normal) / rayDirectionDotNormal;
 
                 if (t < 0)
                 {
@@ -47,7 +46,7 @@ namespace RayTracer
                 }
 
                 // Calculate position of the hit
-                Vector3 position = origin + t * ray.Direction;
+                Vector3 position = ray.Origin + t * ray.Direction;
                 return new RayHit(position, this.normal, ray.Direction, this.material);
             }
             return null;
