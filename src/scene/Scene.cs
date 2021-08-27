@@ -71,7 +71,7 @@ namespace RayTracer
             {
                 for (int x = 0; x < outputImage.Width; x++)
                 {
-                    Ray ray = RayToPixel(x, y, outputImage);
+                    Ray ray = CameraRay(x, y, outputImage);
 
                     outputImage.SetPixel(x, y, black);
                     double distanceSq = Double.MaxValue;
@@ -124,7 +124,7 @@ namespace RayTracer
             return new Color(Math.Max(color.R, 0), Math.Max(color.G, 0), Math.Max(color.B, 0));
         }
 
-        private Ray RayToPixel(int x, int y, Image outputImage)
+        private Ray CameraRay(int x, int y, Image outputImage)
         {
             // Normalise the pixel space and pixels in the middles
             double pixelX = (x + 0.5) / outputImage.Width;
