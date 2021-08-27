@@ -40,7 +40,7 @@ namespace RayTracer
                 // If the ray hit the plane
                 double t = (this.center - ray.Origin).Dot(this.normal) / rayDirectionDotNormal;
 
-                if (t < 0)
+                if (t <= 0)
                 {
                     return null;
                 }

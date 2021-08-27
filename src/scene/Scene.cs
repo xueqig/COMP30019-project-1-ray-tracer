@@ -89,31 +89,26 @@ namespace RayTracer
 
                     Ray ray = new Ray(origin, direction);
 
-                    // Console.WriteLine(ray.Direction);
-
                     outputImage.SetPixel(x, y, new Color(0, 0, 0));
-                    double t = 0;
+                    double distanceSq = Double.MaxValue;
                     foreach (SceneEntity entity in this.entities)
                     {
                         RayHit hit = entity.Intersect(ray);
-                        if (hit != null)
+
+                        // Check if object is hit and is first hit
+                        if (hit == null || hit.Position.LengthSq() > distanceSq)
                         {
-                            // We got a hit with this entity!
-                            // The colour of the entity is entity.Material.Color
-                            // Check if the entity is the first entity being hit
-                            double t1 = hit.Position.LengthSq();
-                            if (t == 0 || t1 < t)
-                            {
-                                outputImage.SetPixel(x, y, entity.Material.Color);
-                                t = t1;
-                            }
+                            continue;
                         }
+
+                        distanceSq = hit.Position.LengthSq();
+                        outputImage.SetPixel(x, y, entity.Material.Color);
                     }
                 }
             }
         }
-
     }
 }
+
 
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-generating-camera-rays/generating-camera-rays
