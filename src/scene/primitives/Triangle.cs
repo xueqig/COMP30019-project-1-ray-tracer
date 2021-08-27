@@ -48,7 +48,7 @@ namespace RayTracer
             double t = (this.v0 - ray.Origin).Dot(normal) / rayDirectionDotNormal;
 
             // Check if triangle is in behind the ray
-            if (t < 0)
+            if (t <= 0)
             {
                 return null;
             }
