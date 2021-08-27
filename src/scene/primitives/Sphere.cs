@@ -32,9 +32,8 @@ namespace RayTracer
         public RayHit Intersect(Ray ray)
         {
             // Write your code here...
-            Vector3 origin = new Vector3(0, 0, 0);
             // Calculate the distance from the origin to the point on the ray halfway between the 2 intersection points
-            Vector3 L = this.center - origin;
+            Vector3 L = this.center - ray.Origin;
             double tc = L.Dot(ray.Direction);
 
             if (tc < 0)
@@ -51,10 +50,10 @@ namespace RayTracer
             // Calculate intersection point
             double t1c = Math.Sqrt(this.radius * this.radius - d2);
             double t1 = tc - t1c;
-            Vector3 position = origin + t1 * ray.Direction;
+            Vector3 position = ray.Origin + t1 * ray.Direction;
 
             // Calculate the normal at this position
-            Vector3 normal = position - this.center;
+            Vector3 normal = (position - this.center).Normalized();
 
             return new RayHit(position, normal, ray.Direction, this.material);
         }

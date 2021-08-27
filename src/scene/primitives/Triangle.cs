@@ -34,20 +34,27 @@ namespace RayTracer
         {
             // Write your code here...
             // Calculate normal of the plane
-            Vector3 normal = (this.v1 - this.v0).Cross(this.v2 - this.v0);
+            Vector3 normal = (this.v1 - this.v0).Cross(this.v2 - this.v0).Normalized();
 
             // Check if the ray hits the plane
             // If the ray is perpendicular to normal, it will not hit the plane
-            if (ray.Direction.Dot(normal) == 0)
+            double rayDirectionDotNormal = normal.Dot(ray.Direction);
+            if (Math.Abs(rayDirectionDotNormal) < double.Epsilon)
             {
                 return null;
             }
 
             // If the ray hit the plane
-            Vector3 origin = new Vector3(0, 0, 0);
-            double t = (this.v0 - origin).Dot(normal) / ray.Direction.Dot(normal);
+            double t = (this.v0 - ray.Origin).Dot(normal) / rayDirectionDotNormal;
+
+            // Check if triangle is in behind the ray
+            if (t < 0)
+            {
+                return null;
+            }
+
             // Calculate position of the hit
-            Vector3 position = origin + t * ray.Direction;
+            Vector3 position = ray.Origin + t * ray.Direction;
 
             // Check if position of the hit is inside the triangle 
             // Barycentric coordinate system
