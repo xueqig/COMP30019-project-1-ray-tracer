@@ -54,7 +54,7 @@ namespace RayTracer
             Vector3 position = origin + t1 * ray.Direction;
 
             // Calculate the normal at this position
-            Vector3 normal = position - this.center;
+            Vector3 normal = (position - this.center).Normalized();
 
             return new RayHit(position, normal, ray.Direction, this.material);
         }
