@@ -22,6 +22,11 @@ namespace RayTracer
         // You may wish to write methods to compute other vectors, 
         // e.g. reflection, transmission, etc
 
+        public Vector3 Reflect()
+        {
+            return (this.incident - 2 * this.incident.Dot(this.normal) * this.normal).Normalized();
+        }
+
         public Vector3 Position { get { return this.position; } }
 
         public Vector3 Normal { get { return this.normal; } }

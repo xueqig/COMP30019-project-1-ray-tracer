@@ -98,7 +98,8 @@ namespace RayTracer
                         }
                         else if (entity.Material.Type == Material.MaterialType.Reflective)
                         {
-
+                            RayHit lightRayHit = new RayHit(hit.Position, hit.Normal, hit.Incident, entity.Material);
+                            color = CastRay(lightRayHit, 0);
                         }
                     }
                     outputImage.SetPixel(x, y, NormalizeColor(color));
@@ -106,7 +107,7 @@ namespace RayTracer
             }
         }
 
-        private Color CastRay(RayHit lightRayHit, SceneEntity entity, int depth = 0)
+        private Color CastRay(RayHit lightRayHit, int depth)
         {
             int maxDepth = 5;
             Color hitColor = new Color(0, 0, 0);
@@ -117,20 +118,37 @@ namespace RayTracer
             }
 
             Ray ray = new Ray(lightRayHit.Position, lightRayHit.Reflect());
-            // double distanceSq = Double.MaxValue;
-            // foreach (SceneEntity entity in this.entities)
-            // {
-            //     RayHit hit = entity.Intersect(ray);
+            SceneEntity entity = FirstEntityHit(ray);
 
-            //     // Check if object is hit and is first hit
-            //     if (hit == null || hit.Position.LengthSq() > distanceSq)
-            //     {
-            //         continue;
-            //     }
-            //     distanceSq = hit.Position.LengthSq();
-            //     hitColor += CastRay(anotherHit, light, depth++);
-            // }
+            if (entity != null)
+            {
+                RayHit hit = entity.Intersect(ray);
 
+                Color color = new Color(0, 0, 0);
+                foreach (PointLight light in this.lights)
+                {
+                    Vector3 L = (light.Position - hit.Position).Normalized();
+                    // Check if light is blocked
+                    if (LightIsBlocked(hit.Position, light.Position, entity))
+                    {
+                        continue;
+                    }
+
+                    // Add illumination based on material type
+                    if (entity.Material.Type == Material.MaterialType.Diffuse)
+                    {
+                        // Apply diffuse
+                        color += entity.Material.Color * light.Color * hit.Normal.Dot(L);
+                    }
+                }
+
+                hitColor += color;
+                if (entity.Material.Type != Material.MaterialType.Diffuse)
+                {
+                    depth++;
+                    CastRay(hit, depth);
+                }
+            }
             return hitColor;
         }
 
