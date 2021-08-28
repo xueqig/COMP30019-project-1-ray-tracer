@@ -106,12 +106,14 @@ namespace RayTracer
 
         private Boolean LightIsBlocked(Vector3 hitPosition, Vector3 lightPosition, SceneEntity currentEntity)
         {
-            Vector3 direction = (lightPosition - hitPosition).Normalized();
-            Ray ray = new Ray(hitPosition, direction);
+            Vector3 hitToLight = lightPosition - hitPosition;
+            // Fire another ray from hit point to light source
+            Ray ray = new Ray(hitPosition, hitToLight.Normalized());
             foreach (SceneEntity entity in this.entities)
             {
                 RayHit hit = entity.Intersect(ray);
-                if (hit != null && entity != currentEntity)
+                // Check if the ray hits a closer surface
+                if (hit != null && entity != currentEntity && (hit.Position - hitPosition).LengthSq() < hitToLight.LengthSq())
                 {
                     return true;
                 }
