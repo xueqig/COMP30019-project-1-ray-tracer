@@ -72,36 +72,57 @@ namespace RayTracer
                 for (int x = 0; x < outputImage.Width; x++)
                 {
                     Ray ray = CameraRay(x, y, outputImage);
-
-                    outputImage.SetPixel(x, y, black);
-                    double distanceSq = Double.MaxValue;
-                    foreach (SceneEntity entity in this.entities)
+                    SceneEntity entity = FirstEntityHit(ray);
+                    if (entity == null)
                     {
-                        RayHit hit = entity.Intersect(ray);
+                        continue;
+                    }
 
-                        // Check if object is hit and is first hit
-                        if (hit == null || hit.Position.LengthSq() > distanceSq)
+                    RayHit hit = entity.Intersect(ray);
+                    Color color = new Color(0, 0, 0);
+                    foreach (PointLight light in this.lights)
+                    {
+                        Vector3 L = (light.Position - hit.Position).Normalized();
+                        // Check if light is blocked
+                        if (LightIsBlocked(hit.Position, light.Position, entity))
                         {
                             continue;
                         }
-                        distanceSq = hit.Position.LengthSq();
 
-                        Color finalColor = new Color(0, 0, 0);
-                        foreach (PointLight light in this.lights)
+                        // Add illumination based on material type
+                        if (entity.Material.Type == Material.MaterialType.Diffuse)
                         {
-                            Vector3 L = (light.Position - hit.Position).Normalized();
-                            // Check if light is blocked
-                            if (!LightIsBlocked(hit.Position, light.Position, entity))
-                            {
-                                // Apply diffuse
-                                finalColor += entity.Material.Color * light.Color * hit.Normal.Dot(L);
-                            }
+                            // Apply diffuse
+                            color += entity.Material.Color * light.Color * hit.Normal.Dot(L);
                         }
-                        outputImage.SetPixel(x, y, NormalizeColor(finalColor));
-                    }
+                        else if (entity.Material.Type == Material.MaterialType.Reflective)
+                        {
 
+                        }
+                    }
+                    outputImage.SetPixel(x, y, NormalizeColor(color));
                 }
             }
+        }
+
+        private SceneEntity FirstEntityHit(Ray ray)
+        {
+            SceneEntity firstEntity = null;
+            double minDistanceSq = Double.MaxValue;
+            foreach (SceneEntity entity in this.entities)
+            {
+                RayHit hit = entity.Intersect(ray);
+                if (hit != null)
+                {
+                    double distanceSq = (hit.Position - ray.Origin).LengthSq();
+                    if (distanceSq < minDistanceSq)
+                    {
+                        minDistanceSq = distanceSq;
+                        firstEntity = entity;
+                    }
+                }
+            }
+            return firstEntity;
         }
 
         private Boolean LightIsBlocked(Vector3 hitPosition, Vector3 lightPosition, SceneEntity currentEntity)
