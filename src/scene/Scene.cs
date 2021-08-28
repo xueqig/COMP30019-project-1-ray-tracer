@@ -75,6 +75,7 @@ namespace RayTracer
                     SceneEntity entity = FirstEntityHit(ray);
                     if (entity == null)
                     {
+                        outputImage.SetPixel(x, y, black);
                         continue;
                     }
 
@@ -103,6 +104,34 @@ namespace RayTracer
                     outputImage.SetPixel(x, y, NormalizeColor(color));
                 }
             }
+        }
+
+        private Color CastRay(RayHit lightRayHit, SceneEntity entity, int depth = 0)
+        {
+            int maxDepth = 5;
+            Color hitColor = new Color(0, 0, 0);
+
+            if (depth > maxDepth)
+            {
+                return hitColor;
+            }
+
+            Ray ray = new Ray(lightRayHit.Position, lightRayHit.Reflect());
+            // double distanceSq = Double.MaxValue;
+            // foreach (SceneEntity entity in this.entities)
+            // {
+            //     RayHit hit = entity.Intersect(ray);
+
+            //     // Check if object is hit and is first hit
+            //     if (hit == null || hit.Position.LengthSq() > distanceSq)
+            //     {
+            //         continue;
+            //     }
+            //     distanceSq = hit.Position.LengthSq();
+            //     hitColor += CastRay(anotherHit, light, depth++);
+            // }
+
+            return hitColor;
         }
 
         private SceneEntity FirstEntityHit(Ray ray)
