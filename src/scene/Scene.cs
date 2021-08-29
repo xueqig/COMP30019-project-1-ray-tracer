@@ -50,18 +50,9 @@ namespace RayTracer
         /// <param name="outputImage">Image to store render output</param>
         public void Render(Image outputImage)
         {
-            // // Begin writing your code here...
-            // int width = outputImage.Width;
-            // int height = outputImage.Height;
-            // int numPixels = width * height;
-            // Color white = new Color(255, 255, 255);
+            // Begin writing your code here...
 
-            // for (int pid = 0; pid < numPixels; pid++)
-            // {
-            //     outputImage.SetPixel(pid, white);
-            // }
-
-            // Stage 1.3 - Fire a ray to each pixel
+            // Fire a ray to each pixel
             Vector3 origin = new Vector3(0, 0, 0);
             Color black = new Color(0, 0, 0);
 
