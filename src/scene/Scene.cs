@@ -84,6 +84,38 @@ namespace RayTracer
                 }
             }
         }
+
+        private double Fresnel(RayHit hit, Material material)
+        {
+            double kr;
+            double cosi = hit.Incident.Dot(hit.Normal);
+            double etai = 1;
+            double etat = material.RefractiveIndex;
+
+            if (cosi > 0)
+            {
+                double temp = etai;
+                etai = etat;
+                etat = temp;
+            }
+            // Compute sini using Snell's law
+            double sint = etai / etat * Math.Sqrt(Math.Max(0, 1 - cosi * cosi));
+            // Total internal reflection
+            if (sint >= 1)
+            {
+                kr = 1;
+            }
+            else
+            {
+                double cost = Math.Sqrt(Math.Max(0, 1 - sint * sint));
+                cosi = Math.Abs(cosi);
+                double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+                double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+                kr = (Rs * Rs + Rp * Rp) / 2;
+            }
+            return kr;
+        }
+
         private Color CastRay(RayHit hit, SceneEntity entity, Color color, int depth)
         {
             int maxDepth = 5;
@@ -95,28 +127,43 @@ namespace RayTracer
 
             if (entity.Material.Type == Material.MaterialType.Reflective)
             {
-                Ray ray = new Ray(hit.Position, hit.Reflect());
+                Ray ray = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Reflect());
                 SceneEntity newEntity = FirstEntityHit(ray);
-
                 if (newEntity != null)
                 {
                     RayHit newHit = newEntity.Intersect(ray);
-                    depth += 1;
+                    depth++;
                     return CastRay(newHit, newEntity, color, depth);
                 }
                 return NormalizeColor(color);
             }
             else if (entity.Material.Type == Material.MaterialType.Refractive)
             {
-                Ray ray = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Refract(entity.Material));
-                SceneEntity newEntity = FirstEntityHit(ray);
+                double kr = Fresnel(hit, entity.Material);
 
-                if (newEntity != null)
+                // Reflect
+                Ray reflectRay = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Reflect());
+                SceneEntity reflectEntity = FirstEntityHit(reflectRay);
+                Color reflectColor = new Color(0, 0, 0);
+                if (reflectEntity != null)
                 {
-                    RayHit newHit = newEntity.Intersect(ray);
-                    depth += 1;
-                    return CastRay(newHit, newEntity, color, depth);
+                    RayHit reflectHit = reflectEntity.Intersect(reflectRay);
+                    depth++;
+                    reflectColor = CastRay(reflectHit, reflectEntity, reflectColor, depth);
                 }
+
+                // Refract
+                Ray refractRay = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Refract(entity.Material));
+                SceneEntity refractEntity = FirstEntityHit(refractRay);
+                Color refractColor = new Color(0, 0, 0);
+                if (refractEntity != null)
+                {
+                    RayHit refractHit = refractEntity.Intersect(refractRay);
+                    depth++;
+                    refractColor = CastRay(refractHit, refractEntity, refractColor, depth);
+                }
+
+                color = reflectColor * kr + refractColor * (1 - kr);
                 return NormalizeColor(color);
             }
             else
