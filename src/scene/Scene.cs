@@ -80,40 +80,11 @@ namespace RayTracer
                     }
 
                     RayHit hit = entity.Intersect(ray);
-
-                    if (entity.Material.Type == Material.MaterialType.Diffuse)
-                    {
-                        outputImage.SetPixel(x, y, DiffuseColor(hit, entity));
-                    }
-                    else if (entity.Material.Type == Material.MaterialType.Reflective)
-                    {
-                        outputImage.SetPixel(x, y, ReflectiveColor(hit, new Color(0, 0, 0), 0));
-                    }
-                    else if (entity.Material.Type == Material.MaterialType.Refractive)
-                    {
-                        Color printColor = RefractiveColor(hit, new Color(0, 0, 0), entity, 0);
-                        outputImage.SetPixel(x, y, printColor);
-                    }
+                    outputImage.SetPixel(x, y, CastRay(hit, entity, new Color(0, 0, 0), 0));
                 }
             }
         }
-
-        private Color DiffuseColor(RayHit hit, SceneEntity entity)
-        {
-            Color color = new Color(0, 0, 0);
-            foreach (PointLight light in this.lights)
-            {
-                Vector3 L = (light.Position - hit.Position).Normalized();
-                // Check if light is blocked
-                if (!LightIsBlocked(hit.Position, light.Position, entity))
-                {
-                    color += entity.Material.Color * light.Color * hit.Normal.Dot(L);
-                }
-            }
-            return NormalizeColor(color);
-        }
-
-        private Color RefractiveColor(RayHit hit, Color color, SceneEntity entity, int depth)
+        private Color CastRay(RayHit hit, SceneEntity entity, Color color, int depth)
         {
             int maxDepth = 5;
 
@@ -122,49 +93,45 @@ namespace RayTracer
                 return NormalizeColor(color);
             }
 
-            Ray ray = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Refract(entity.Material));
-            SceneEntity newEntity = FirstEntityHit(ray);
-
-            if (newEntity != null)
+            if (entity.Material.Type == Material.MaterialType.Reflective)
             {
-                RayHit newHit = newEntity.Intersect(ray);
-                if (newEntity.Material.Type == Material.MaterialType.Diffuse)
+                Ray ray = new Ray(hit.Position, hit.Reflect());
+                SceneEntity newEntity = FirstEntityHit(ray);
+
+                if (newEntity != null)
                 {
-                    color += DiffuseColor(newHit, newEntity);
-                    return color;
-                }
-                else if (newEntity.Material.Type == Material.MaterialType.Refractive)
-                {
+                    RayHit newHit = newEntity.Intersect(ray);
                     depth += 1;
-                    return RefractiveColor(newHit, color, newEntity, depth);
+                    return CastRay(newHit, newEntity, color, depth);
                 }
-            }
-            return color;
-        }
-
-        private Color ReflectiveColor(RayHit hit, Color color, int depth)
-        {
-            int maxDepth = 5;
-
-            if (depth > maxDepth)
-            {
                 return NormalizeColor(color);
             }
-
-            Ray ray = new Ray(hit.Position, hit.Reflect());
-            SceneEntity entity = FirstEntityHit(ray);
-
-            if (entity != null)
+            else if (entity.Material.Type == Material.MaterialType.Refractive)
             {
-                RayHit newHit = entity.Intersect(ray);
-                if (entity.Material.Type == Material.MaterialType.Diffuse)
+                Ray ray = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Refract(entity.Material));
+                SceneEntity newEntity = FirstEntityHit(ray);
+
+                if (newEntity != null)
                 {
-                    color += DiffuseColor(newHit, entity);
+                    RayHit newHit = newEntity.Intersect(ray);
                     depth += 1;
-                    ReflectiveColor(newHit, color, depth);
+                    return CastRay(newHit, newEntity, color, depth);
                 }
+                return NormalizeColor(color);
             }
-            return NormalizeColor(color);
+            else
+            {
+                foreach (PointLight light in this.lights)
+                {
+                    Vector3 L = (light.Position - hit.Position).Normalized();
+                    // Check if light is blocked
+                    if (!LightIsBlocked(hit.Position, light.Position))
+                    {
+                        color += entity.Material.Color * light.Color * hit.Normal.Dot(L);
+                    }
+                }
+                return NormalizeColor(color);
+            }
         }
 
         private SceneEntity FirstEntityHit(Ray ray)
@@ -187,16 +154,19 @@ namespace RayTracer
             return firstEntity;
         }
 
-        private Boolean LightIsBlocked(Vector3 hitPosition, Vector3 lightPosition, SceneEntity currentEntity)
+        private Boolean LightIsBlocked(Vector3 hitPosition, Vector3 lightPosition)
         {
             Vector3 hitToLight = lightPosition - hitPosition;
+            Vector3 direction = hitToLight.Normalized();
+            double offset = 0.0000000001;
             // Fire another ray from hit point to light source
-            Ray ray = new Ray(hitPosition, hitToLight.Normalized());
+            // Add offset to ray origin
+            Ray ray = new Ray(hitPosition + offset * direction, direction);
             foreach (SceneEntity entity in this.entities)
             {
                 RayHit hit = entity.Intersect(ray);
                 // Check if the ray hits a closer surface
-                if (hit != null && entity != currentEntity && (hit.Position - hitPosition).LengthSq() < hitToLight.LengthSq())
+                if (hit != null && (hit.Position - hitPosition).LengthSq() < hitToLight.LengthSq())
                 {
                     return true;
                 }
