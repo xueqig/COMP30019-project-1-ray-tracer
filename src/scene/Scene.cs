@@ -71,16 +71,27 @@ namespace RayTracer
             {
                 for (int x = 0; x < outputImage.Width; x++)
                 {
-                    Ray ray = CameraRay(x, y, outputImage);
-                    SceneEntity entity = FirstEntityHit(ray);
-                    if (entity == null)
+                    Color color = new Color(0, 0, 0);
+                    double AAMultiplier = options.AAMultiplier;
+                    for (int j = 0; j < AAMultiplier; j++)
                     {
-                        outputImage.SetPixel(x, y, black);
-                        continue;
-                    }
+                        for (int i = 0; i < AAMultiplier; i++)
+                        {
+                            double size = 1 / AAMultiplier;
+                            Ray ray = CameraRay(x + i * size, y + j * size, outputImage);
+                            SceneEntity entity = FirstEntityHit(ray);
+                            if (entity == null)
+                            {
+                                continue;
+                            }
 
-                    RayHit hit = entity.Intersect(ray);
-                    outputImage.SetPixel(x, y, CastRay(hit, entity, new Color(0, 0, 0), 0));
+                            RayHit hit = entity.Intersect(ray);
+                            color += CastRay(hit, entity, new Color(0, 0, 0), 0);
+                        }
+
+                    }
+                    color /= (AAMultiplier * AAMultiplier);
+                    outputImage.SetPixel(x, y, color);
                 }
             }
         }
@@ -226,7 +237,7 @@ namespace RayTracer
             return new Color(Math.Max(color.R, 0), Math.Max(color.G, 0), Math.Max(color.B, 0));
         }
 
-        private Ray CameraRay(int x, int y, Image outputImage)
+        private Ray CameraRay(double x, double y, Image outputImage)
         {
             // Normalise the pixel space and pixels in the middles
             double pixelX = (x + 0.5) / outputImage.Width;
