@@ -87,7 +87,12 @@ namespace RayTracer
                     }
                     else if (entity.Material.Type == Material.MaterialType.Reflective)
                     {
-                        outputImage.SetPixel(x, y, ReflectiveColor(hit, 0));
+                        outputImage.SetPixel(x, y, ReflectiveColor(hit, new Color(0, 0, 0), 0));
+                    }
+                    else if (entity.Material.Type == Material.MaterialType.Refractive)
+                    {
+                        Color printColor = RefractiveColor(hit, new Color(0, 0, 0), entity, 0);
+                        outputImage.SetPixel(x, y, printColor);
                     }
                 }
             }
@@ -108,10 +113,38 @@ namespace RayTracer
             return NormalizeColor(color);
         }
 
-        private Color ReflectiveColor(RayHit hit, int depth)
+        private Color RefractiveColor(RayHit hit, Color color, SceneEntity entity, int depth)
         {
             int maxDepth = 5;
-            Color color = new Color(0, 0, 0);
+
+            if (depth > maxDepth)
+            {
+                return NormalizeColor(color);
+            }
+
+            Ray ray = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Refract(entity.Material));
+            SceneEntity newEntity = FirstEntityHit(ray);
+
+            if (newEntity != null)
+            {
+                RayHit newHit = newEntity.Intersect(ray);
+                if (newEntity.Material.Type == Material.MaterialType.Diffuse)
+                {
+                    color += DiffuseColor(newHit, newEntity);
+                    return color;
+                }
+                else if (newEntity.Material.Type == Material.MaterialType.Refractive)
+                {
+                    depth += 1;
+                    return RefractiveColor(newHit, color, newEntity, depth);
+                }
+            }
+            return color;
+        }
+
+        private Color ReflectiveColor(RayHit hit, Color color, int depth)
+        {
+            int maxDepth = 5;
 
             if (depth > maxDepth)
             {
@@ -128,7 +161,7 @@ namespace RayTracer
                 {
                     color += DiffuseColor(newHit, entity);
                     depth += 1;
-                    ReflectiveColor(newHit, depth);
+                    ReflectiveColor(newHit, color, depth);
                 }
             }
             return NormalizeColor(color);
@@ -144,7 +177,7 @@ namespace RayTracer
                 if (hit != null)
                 {
                     double distanceSq = (hit.Position - ray.Origin).LengthSq();
-                    if (distanceSq < minDistanceSq)
+                    if (distanceSq < minDistanceSq && distanceSq != 0)
                     {
                         minDistanceSq = distanceSq;
                         firstEntity = entity;
