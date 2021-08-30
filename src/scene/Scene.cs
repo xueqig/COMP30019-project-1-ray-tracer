@@ -51,7 +51,6 @@ namespace RayTracer
         public void Render(Image outputImage)
         {
             // Begin writing your code here...
-
             // Fire a ray to each pixel
             Vector3 origin = new Vector3(0, 0, 0);
             Color black = new Color(0, 0, 0);
@@ -79,7 +78,6 @@ namespace RayTracer
                             RayHit hit = entity.Intersect(ray);
                             color += CastRay(hit, entity, new Color(0, 0, 0), 0);
                         }
-
                     }
                     color /= (AAMultiplier * AAMultiplier);
                     outputImage.SetPixel(x, y, color);
