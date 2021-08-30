@@ -12,6 +12,8 @@ namespace RayTracer
         private Material material;
         private List<Vector3> vertices;
         private List<List<int>> faces;
+        private Vector3 center;
+        private double radius;
 
         /// <summary>
         /// Construct a new OBJ model.
@@ -47,6 +49,10 @@ namespace RayTracer
                     this.faces.Add(face);
                 }
             }
+            Vector3 minVector = this.minVector() * 0.35 + new Vector3(0, -0.9, 2);
+            Vector3 maxVector = this.maxVector() * 0.35 + new Vector3(0, -0.9, 2);
+            this.center = new Vector3((minVector.X + maxVector.X) / 2, (minVector.Y + maxVector.Y) / 2, (minVector.Z + maxVector.Z) / 2);
+            this.radius = (maxVector - minVector).Length() / 2;
         }
 
         /// <summary>
@@ -57,15 +63,20 @@ namespace RayTracer
         /// <returns>Ray hit data, or null if no hit</returns>
         public RayHit Intersect(Ray ray)
         {
-            // Write your code here...
+            // Create bounding sphere
+            SceneEntity sphere = new Sphere(this.center, this.radius, this.material);
+            if (sphere.Intersect(ray) == null)
+            {
+                return null;
+            }
+
             for (int i = 0; i < this.faces.Count; i++)
             {
                 try
                 {
-                    // Console.WriteLine(this.vertices[this.faces[i][0]]);
-                    Vector3 v0 = this.vertices[this.faces[i][0] - 1] + new Vector3(0, -0.9, 2);
-                    Vector3 v1 = this.vertices[this.faces[i][1] - 1] + new Vector3(0, -0.9, 2);
-                    Vector3 v2 = this.vertices[this.faces[i][2] - 1] + new Vector3(0, -0.9, 2);
+                    Vector3 v0 = this.vertices[this.faces[i][0] - 1] * 0.35 + new Vector3(0, -0.9, 2);
+                    Vector3 v1 = this.vertices[this.faces[i][1] - 1] * 0.35 + new Vector3(0, -0.9, 2);
+                    Vector3 v2 = this.vertices[this.faces[i][2] - 1] * 0.35 + new Vector3(0, -0.9, 2);
                     SceneEntity triangle = new Triangle(v0, v1, v2, this.material);
 
                     if (triangle.Intersect(ray) != null)
@@ -85,6 +96,51 @@ namespace RayTracer
         /// The material attached to this object.
         /// </summary>
         public Material Material { get { return this.material; } }
+
+        private Vector3 minVector()
+        {
+            double minX = Double.MaxValue;
+            double minY = Double.MaxValue;
+            double minZ = Double.MaxValue;
+            for (int i = 0; i < this.vertices.Count; i++)
+            {
+                if (this.vertices[i].X < minX)
+                {
+                    minX = this.vertices[i].X;
+                }
+                if (this.vertices[i].Y < minY)
+                {
+                    minY = this.vertices[i].Y;
+                }
+                if (this.vertices[i].Z < minZ)
+                {
+                    minZ = this.vertices[i].Z;
+                }
+            }
+            return new Vector3(minX, minY, minZ);
+        }
+        private Vector3 maxVector()
+        {
+            double maxX = Double.MinValue;
+            double maxY = Double.MinValue;
+            double maxZ = Double.MinValue;
+            for (int i = 0; i < this.vertices.Count; i++)
+            {
+                if (this.vertices[i].X > maxX)
+                {
+                    maxX = this.vertices[i].X;
+                }
+                if (this.vertices[i].Y > maxY)
+                {
+                    maxY = this.vertices[i].Y;
+                }
+                if (this.vertices[i].Z > maxZ)
+                {
+                    maxZ = this.vertices[i].Z;
+                }
+            }
+            return new Vector3(maxX, maxY, maxZ);
+        }
     }
 
 }
