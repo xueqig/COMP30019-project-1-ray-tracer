@@ -11,6 +11,7 @@ namespace RayTracer
     {
         private Material material;
         private List<Vector3> vertices;
+        private List<Vector3> vertexNormals;
         private List<List<int>> faces;
         private Vector3 center;
         private double radius;
@@ -28,6 +29,7 @@ namespace RayTracer
 
             // Here's some code to get you started reading the file...
             this.vertices = new List<Vector3>();
+            this.vertexNormals = new List<Vector3>();
             this.faces = new List<List<int>>();
 
             string[] lines = File.ReadAllLines(objFilePath);
@@ -38,6 +40,11 @@ namespace RayTracer
                 {
                     Vector3 vertex = new Vector3(Double.Parse(line[1]), Double.Parse(line[2]), Double.Parse(line[3]));
                     this.vertices.Add(vertex);
+                }
+                else if (line[0] == "vn")
+                {
+                    Vector3 vertexNormal = new Vector3(Double.Parse(line[1]), Double.Parse(line[2]), Double.Parse(line[3]));
+                    this.vertexNormals.Add(vertexNormal);
                 }
                 else if (line[0] == "f")
                 {
@@ -69,7 +76,7 @@ namespace RayTracer
             {
                 return null;
             }
-
+            // i = 306; i < 307
             for (int i = 0; i < this.faces.Count; i++)
             {
                 try
@@ -77,11 +84,18 @@ namespace RayTracer
                     Vector3 v0 = this.vertices[this.faces[i][0] - 1] * 0.35 + new Vector3(0, -0.9, 2);
                     Vector3 v1 = this.vertices[this.faces[i][1] - 1] * 0.35 + new Vector3(0, -0.9, 2);
                     Vector3 v2 = this.vertices[this.faces[i][2] - 1] * 0.35 + new Vector3(0, -0.9, 2);
-                    SceneEntity triangle = new Triangle(v0, v1, v2, this.material);
 
-                    if (triangle.Intersect(ray) != null)
+                    Vector3 n0 = this.vertexNormals[this.faces[i][0] - 1];
+                    Vector3 n1 = this.vertexNormals[this.faces[i][1] - 1];
+                    Vector3 n2 = this.vertexNormals[this.faces[i][2] - 1];
+
+                    // SceneEntity triangle = new Triangle(v0, v1, v2, this.material);
+                    // RayHit hit = triangle.Intersect(ray);
+
+                    RayHit hit = rayTriangleIntersect(ray, v0, v1, v2, n0, n1, n2);
+                    if (hit != null)
                     {
-                        return triangle.Intersect(ray);
+                        return hit;
                     }
                 }
                 catch (Exception e)
@@ -97,6 +111,36 @@ namespace RayTracer
         /// </summary>
         public Material Material { get { return this.material; } }
 
+        private RayHit rayTriangleIntersect(Ray ray, Vector3 v0, Vector3 v1, Vector3 v2, Vector3 n0, Vector3 n1, Vector3 n2)
+        {
+            // Write your code here...
+            Vector3 v0v1 = v1 - v0;
+            Vector3 v0v2 = v2 - v0;
+            Vector3 pvec = ray.Direction.Cross(v0v2);
+            double det = v0v1.Dot(pvec);
+
+            // ray and triangle are parallel if det is close to 0
+            if (Math.Abs(det) < Double.Epsilon) return null;
+
+            double invDet = 1 / det;
+
+            Vector3 tvec = ray.Origin - v0;
+            double u = tvec.Dot(pvec) * invDet;
+            if (u < 0 || u > 1) return null;
+
+            Vector3 qvec = tvec.Cross(v0v1);
+            double v = ray.Direction.Dot(qvec) * invDet;
+            if (v < 0 || u + v > 1) return null;
+
+            double t = v0v2.Dot(qvec) * invDet;
+
+            // vertex normal
+            Vector3 hitNormal = (1 - u - v) * n0 + u * n1 + v * n2;
+
+            Vector3 position = ray.Origin + t * ray.Direction;
+
+            return new RayHit(position, hitNormal, ray.Direction, this.material);
+        }
         private Vector3 minVector()
         {
             double minX = Double.MaxValue;
