@@ -118,7 +118,7 @@ namespace RayTracer
 
         private Color CastRay(RayHit hit, SceneEntity entity, Color color, int depth)
         {
-            int maxDepth = 5;
+            int maxDepth = 10;
 
             if (depth > maxDepth)
             {

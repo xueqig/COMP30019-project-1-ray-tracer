@@ -77,6 +77,8 @@ namespace RayTracer
                 return null;
             }
             // i = 306; i < 307
+            double minDistanceSq = Double.MaxValue;
+            RayHit firstHit = null;
             for (int i = 0; i < this.faces.Count; i++)
             {
                 try
@@ -89,13 +91,18 @@ namespace RayTracer
                     Vector3 n1 = this.vertexNormals[this.faces[i][1] - 1];
                     Vector3 n2 = this.vertexNormals[this.faces[i][2] - 1];
 
-                    // SceneEntity triangle = new Triangle(v0, v1, v2, this.material);
-                    // RayHit hit = triangle.Intersect(ray);
+                    SceneEntity triangle = new Triangle(v0, v1, v2, this.material);
+                    RayHit hit = triangle.Intersect(ray);
 
-                    RayHit hit = rayTriangleIntersect(ray, v0, v1, v2, n0, n1, n2);
+                    // RayHit hit = rayTriangleIntersect(ray, v0, v1, v2, n0, n1, n2);
                     if (hit != null)
                     {
-                        return hit;
+                        double distanceSq = (hit.Position - ray.Origin).LengthSq();
+                        if (distanceSq < minDistanceSq && distanceSq != 0)
+                        {
+                            minDistanceSq = distanceSq;
+                            firstHit = hit;
+                        }
                     }
                 }
                 catch (Exception e)
@@ -103,7 +110,7 @@ namespace RayTracer
                     Console.WriteLine(e);
                 }
             }
-            return null;
+            return firstHit;
         }
 
         /// <summary>
