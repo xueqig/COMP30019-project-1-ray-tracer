@@ -98,3 +98,16 @@ Great walkthrough of some of the basic maths: https://blog.scottlogic.com/2020/0
 
 Scratchapixel: intro to ray tracing: https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing/how-does-it-work
 
+Scratchapixel: Ray-Sphere Intersection: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+
+Scratchapixel: Ray-Triangle Intersection: Geometric Solution: https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
+
+Scratchapixel: Ray-Plane and Ray-Disk Intersection: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+
+Scratchapixel: Ray-Tracing a Polygon Mesh (Part 1): https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-polygon-mesh/Ray-Tracing%20a%20Polygon%20Mesh-part-1
+
+Scratchapixel: Ray-Tracing a Polygon Mesh (Part 2): https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-polygon-mesh/ray-tracing-polygon-mesh-part-2
+
+Scratchapixel: Reflection, Refraction and Fresnel: https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel
+
+
