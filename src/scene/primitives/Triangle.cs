@@ -57,8 +57,6 @@ namespace RayTracer
             Vector3 position = ray.Origin + t * ray.Direction;
 
             // Check if position of the hit is inside the triangle 
-            // Barycentric coordinate system
-            // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/barycentric-coordinates
             Vector3 v0v1 = this.v1 - this.v0;
             Vector3 v0p = position - this.v0;
             double dot0 = normal.Dot(v0v1.Cross(v0p));
