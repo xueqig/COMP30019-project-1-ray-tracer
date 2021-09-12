@@ -60,16 +60,23 @@ namespace RayTracer
             Vector3 v0v1 = this.v1 - this.v0;
             Vector3 v0p = position - this.v0;
             double dot0 = normal.Dot(v0v1.Cross(v0p));
+            if (dot0 < 0)
+            {
+                return null;
+            }
 
             Vector3 v1v2 = this.v2 - this.v1;
             Vector3 v1p = position - this.v1;
             double dot1 = normal.Dot(v1v2.Cross(v1p));
+            if (dot1 < 0)
+            {
+                return null;
+            }
 
             Vector3 v2v0 = this.v0 - this.v2;
             Vector3 v2p = position - this.v2;
             double dot2 = normal.Dot(v2v0.Cross(v2p));
-
-            if (dot0 < 0 || dot1 < 0 || dot2 < 0)
+            if (dot2 < 0)
             {
                 return null;
             }
