@@ -7,6 +7,11 @@ namespace RayTracer
     /// Class to represent a ray traced scene, including the objects,
     /// light sources, and associated rendering logic.
     /// </summary>
+    static class Constants
+    {
+        public const int MaxDepth = 10;
+    }
+
     public class Scene
     {
         private SceneOptions options;
@@ -51,17 +56,12 @@ namespace RayTracer
         public void Render(Image outputImage)
         {
             // Begin writing your code here...
-            // Fire a ray to each pixel
-            Vector3 origin = new Vector3(0, 0, 0);
-            Color black = new Color(0, 0, 0);
-
-            // Relate pixel space to world space 
-            // Loop through the pixels and normalise the pixel space
             for (int y = 0; y < outputImage.Height; y++)
             {
                 for (int x = 0; x < outputImage.Width; x++)
                 {
                     Color color = new Color(0, 0, 0);
+                    // Implement anti-aliasing and increase image resolution
                     double AAMultiplier = options.AAMultiplier;
                     for (int j = 0; j < AAMultiplier; j++)
                     {
@@ -76,7 +76,7 @@ namespace RayTracer
                             }
 
                             RayHit hit = entity.Intersect(ray);
-                            color += CastRay(hit, entity, new Color(0, 0, 0), 0);
+                            color += CastRay(hit, entity, color, 0);
                         }
                     }
                     color /= (AAMultiplier * AAMultiplier);
@@ -85,42 +85,9 @@ namespace RayTracer
             }
         }
 
-        private double Fresnel(RayHit hit, Material material)
-        {
-            double kr;
-            double cosi = hit.Incident.Dot(hit.Normal);
-            double etai = 1;
-            double etat = material.RefractiveIndex;
-
-            if (cosi > 0)
-            {
-                double temp = etai;
-                etai = etat;
-                etat = temp;
-            }
-            // Compute sini using Snell's law
-            double sint = etai / etat * Math.Sqrt(Math.Max(0, 1 - cosi * cosi));
-            // Total internal reflection
-            if (sint >= 1)
-            {
-                kr = 1;
-            }
-            else
-            {
-                double cost = Math.Sqrt(Math.Max(0, 1 - sint * sint));
-                cosi = Math.Abs(cosi);
-                double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
-                double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
-                kr = (Rs * Rs + Rp * Rp) / 2;
-            }
-            return kr;
-        }
-
         private Color CastRay(RayHit hit, SceneEntity entity, Color color, int depth)
         {
-            int maxDepth = 10;
-
-            if (depth > maxDepth)
+            if (depth > Constants.MaxDepth)
             {
                 return NormalizeColor(color);
             }
@@ -179,6 +146,36 @@ namespace RayTracer
                 }
                 return NormalizeColor(color);
             }
+        }
+
+        private double Fresnel(RayHit hit, Material material)
+        {
+            double kr;
+            double cosi = hit.Incident.Dot(hit.Normal);
+            double etai = 1;
+            double etat = material.RefractiveIndex;
+            if (cosi > 0)
+            {
+                double temp = etai;
+                etai = etat;
+                etat = temp;
+            }
+            // Compute sini using Snell's law
+            double sint = etai / etat * Math.Sqrt(Math.Max(0, 1 - cosi * cosi));
+            // Total internal reflection
+            if (sint >= 1)
+            {
+                kr = 1;
+            }
+            else
+            {
+                double cost = Math.Sqrt(Math.Max(0, 1 - sint * sint));
+                cosi = Math.Abs(cosi);
+                double Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+                double Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+                kr = (Rs * Rs + Rp * Rp) / 2;
+            }
+            return kr;
         }
 
         private SceneEntity FirstEntityHit(Ray ray)
