@@ -9,6 +9,7 @@ namespace RayTracer
     /// </summary>
     static class Constants
     {
+        public const double fov = Math.PI / 6; // Field-of-view = 60 degree
         public const int MaxDepth = 10;
         public const double Offset = 0.0000000001;
     }
@@ -77,7 +78,7 @@ namespace RayTracer
                             }
 
                             RayHit hit = entity.Intersect(ray);
-                            color += CastRay(hit, entity, color, 0);
+                            color += CastRay(hit, entity, new Color(0, 0, 0), 0);
                         }
                     }
                     color /= (AAMultiplier * AAMultiplier);
@@ -241,11 +242,10 @@ namespace RayTracer
             pixelX = (pixelX * 2) - 1;
             pixelY = 1 - (pixelY * 2);
 
-            // Apply fov = 60 degree to x and y
             // Scale y axis wrt the aspect ratio
             double aspectRatio = (double)outputImage.Width / outputImage.Height;
-            pixelX = pixelX * Math.Tan(Math.PI / 6);
-            pixelY = pixelY * (Math.Tan(Math.PI / 6) / aspectRatio);
+            pixelX = pixelX * Math.Tan(Constants.fov);
+            pixelY = pixelY * (Math.Tan(Constants.fov) / aspectRatio);
 
             Vector3 direction = new Vector3(pixelX, pixelY, pixelZ).Normalized();
 
