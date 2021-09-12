@@ -1,8 +1,11 @@
 
-Material "White" Diffuse (1, .98, .98) 1
-Material "Grey" Diffuse (.5, .5, .5) 1
+Material "WhiteMat" Diffuse (1, .98, .98) 1
+Material "MirrorMat" Reflective (1, 1, 1) 1
 
-PointLight "Light" (.75, 1, 0) (1, 1, 1)
+PointLight "Light" (0, 0.8, 1.5) (.5, .5, .5)
 
-Plane "Plane" (0, -1, 0) (0, 1, 0) "White"
-ObjModel "Wolf" "tests/models/wolf.obj" (0, -1.0, 2.1) .0015 "Grey"
+ObjModel "Wolf" "tests/models/wolf.obj" (0, -1.0, 2.1) .0015 "MirrorMat"
+
+Plane "Floor" (0, -1, 0) (0, 1, 0) "WhiteMat"
+
+
