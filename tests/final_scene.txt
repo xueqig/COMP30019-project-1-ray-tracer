@@ -7,5 +7,3 @@ PointLight "Light" (0, 0.8, 1.5) (.5, .5, .5)
 ObjModel "Wolf" "tests/models/wolf.obj" (0, -1.0, 2.1) .0015 "MirrorMat"
 
 Plane "Floor" (0, -1, 0) (0, 1, 0) "WhiteMat"
-
-
