@@ -3,10 +3,10 @@ This is your README.md... you should write anything relevant to your implementat
 
 Please ensure your student details are specified below (*exactly* as on UniMelb records):
 
-**Name:** ... \
-**Student Number:** XXXXXXX \
-**Username:** ... \
-**Email:** ...@student.unimelb.edu.au
+**Name:** Xueqi Guan \
+**Student Number:** 1098403 \
+**Username:** xueqig \
+**Email:** xueqig@student.unimelb.edu.au
 
 ## Completed stages
 
@@ -19,25 +19,25 @@ Tip: To tick, place an x between the square brackes [ ], like so: [x]
 ##### Stage 1
 
 - [x] Stage 1.1 - Familiarise yourself with the template
-- [ ] Stage 1.2 - Implement vector mathematics
-- [ ] Stage 1.3 - Fire a ray for each pixel
-- [ ] Stage 1.4 - Calculate ray-entity intersections
-- [ ] Stage 1.5 - Output primitives as solid colours
+- [x] Stage 1.2 - Implement vector mathematics
+- [x] Stage 1.3 - Fire a ray for each pixel
+- [x] Stage 1.4 - Calculate ray-entity intersections
+- [x] Stage 1.5 - Output primitives as solid colours
 
 ##### Stage 2
 
-- [ ] Stage 2.1 - Diffuse materials
-- [ ] Stage 2.2 - Shadow rays
-- [ ] Stage 2.3 - Reflective materials
-- [ ] Stage 2.4 - Refractive materials
-- [ ] Stage 2.5 - The Fresnel effect
-- [ ] Stage 2.6 - Anti-aliasing
+- [x] Stage 2.1 - Diffuse materials
+- [x] Stage 2.2 - Shadow rays
+- [x] Stage 2.3 - Reflective materials
+- [x] Stage 2.4 - Refractive materials
+- [x] Stage 2.5 - The Fresnel effect
+- [x] Stage 2.6 - Anti-aliasing
 
 ##### Stage 3
 
 - [ ] Option A - Emissive materials (+6)
 - [ ] Option B - Ambient lighting/occlusion (+6)
-- [ ] Option C - OBJ models (+6)
+- [x] Option C - OBJ models (+6)
 - [ ] Option D - Glossy materials (+3)
 - [ ] Option E - Custom camera orientation (+3)
 - [ ] Option F - Beer's law (+3)
@@ -53,12 +53,12 @@ Be sure to replace ```/images/final_scene.png``` with your final render so it sh
 
 ![My final render](/images/final_scene.png)
 
-This render took **x** minutes and **y** seconds on my PC.
+This render took **11** minutes and **47** seconds on my PC.
 
 I used the following command to render the image exactly as shown:
 
 ```
-dotnet run -- (... your command line args)
+dotnet run -- -f tests/final_scene.txt -o final_scene.png -x 2 
 ```
 
 ## Sample outputs
@@ -97,4 +97,19 @@ Working through a ray tracer, from the head of the xbox games studio: https://ww
 Great walkthrough of some of the basic maths: https://blog.scottlogic.com/2020/03/10/raytracer-how-to.html
 
 Scratchapixel: intro to ray tracing: https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-ray-tracing/how-does-it-work
+
+Scratchapixel: Ray-Sphere Intersection: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+
+Scratchapixel: Ray-Triangle Intersection: Geometric Solution: https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution
+
+Scratchapixel: Ray-Plane and Ray-Disk Intersection: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
+
+Scratchapixel: Ray-Tracing a Polygon Mesh (Part 1): https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-polygon-mesh/Ray-Tracing%20a%20Polygon%20Mesh-part-1
+
+Scratchapixel: Ray-Tracing a Polygon Mesh (Part 2): https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-polygon-mesh/ray-tracing-polygon-mesh-part-2
+
+Scratchapixel: Reflection, Refraction and Fresnel: https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel
+
+Wolf triangle mesh .obj file: https://free3d.com/3d-model/low-poly-wolf-4601.html
+
 

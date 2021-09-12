@@ -33,7 +33,55 @@ namespace RayTracer
         public RayHit Intersect(Ray ray)
         {
             // Write your code here...
-            return null;
+            // Calculate normal of the plane
+            Vector3 normal = (this.v1 - this.v0).Cross(this.v2 - this.v0).Normalized();
+
+            // Check if the ray hits the plane
+            // If the ray is perpendicular to normal, it will not hit the plane
+            double rayDirectionDotNormal = normal.Dot(ray.Direction);
+            if (Math.Abs(rayDirectionDotNormal) < double.Epsilon)
+            {
+                return null;
+            }
+
+            // If the ray hit the plane
+            double t = (this.v0 - ray.Origin).Dot(normal) / rayDirectionDotNormal;
+
+            // Check if triangle is in behind the ray
+            if (t <= 0)
+            {
+                return null;
+            }
+
+            // Calculate position of the hit
+            Vector3 position = ray.Origin + t * ray.Direction;
+
+            // Check if position of the hit is inside the triangle 
+            Vector3 v0v1 = this.v1 - this.v0;
+            Vector3 v0p = position - this.v0;
+            double dot0 = normal.Dot(v0v1.Cross(v0p));
+            if (dot0 < 0)
+            {
+                return null;
+            }
+
+            Vector3 v1v2 = this.v2 - this.v1;
+            Vector3 v1p = position - this.v1;
+            double dot1 = normal.Dot(v1v2.Cross(v1p));
+            if (dot1 < 0)
+            {
+                return null;
+            }
+
+            Vector3 v2v0 = this.v0 - this.v2;
+            Vector3 v2p = position - this.v2;
+            double dot2 = normal.Dot(v2v0.Cross(v2p));
+            if (dot2 < 0)
+            {
+                return null;
+            }
+
+            return new RayHit(position, normal, ray.Direction, this.material);
         }
 
         /// <summary>

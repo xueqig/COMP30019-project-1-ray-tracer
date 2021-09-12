@@ -1,1 +1,8 @@
 
+Material "White" Diffuse (1, .98, .98) 1
+Material "Grey" Diffuse (.5, .5, .5) 1
+
+PointLight "Light" (.75, 1, 0) (1, 1, 1)
+
+Plane "Plane" (0, -1, 0) (0, 1, 0) "White"
+ObjModel "Wolf" "tests/models/wolf.obj" (0, -1.0, 2.1) .0015 "Grey"
