@@ -48,6 +48,7 @@ namespace RayTracer
 
             if (k < 0)
             {
+                // Total internal reflection
                 return (this.incident - 2 * this.incident.Dot(n) * n).Normalized();
             }
             return (eta * this.incident + (eta * cosi - Math.Sqrt(k)) * n).Normalized();
