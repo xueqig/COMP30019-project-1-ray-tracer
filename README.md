@@ -110,4 +110,6 @@ Scratchapixel: Ray-Tracing a Polygon Mesh (Part 2): https://www.scratchapixel.co
 
 Scratchapixel: Reflection, Refraction and Fresnel: https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel
 
+Wolf triangle mesh .obj file: https://free3d.com/3d-model/low-poly-wolf-4601.html
+
 
