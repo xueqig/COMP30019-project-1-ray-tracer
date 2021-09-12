@@ -10,6 +10,7 @@ namespace RayTracer
     static class Constants
     {
         public const int MaxDepth = 10;
+        public const double Offset = 0.0000000001;
     }
 
     public class Scene
@@ -94,7 +95,10 @@ namespace RayTracer
 
             if (entity.Material.Type == Material.MaterialType.Reflective)
             {
-                Ray ray = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Reflect());
+                Vector3 reflectDirection = hit.Reflect();
+                // Offset ray origin slightly away from the surface to prevent premature hit
+                Vector3 origin = hit.Position + Constants.Offset * reflectDirection;
+                Ray ray = new Ray(origin, reflectDirection);
                 SceneEntity newEntity = FirstEntityHit(ray);
                 if (newEntity != null)
                 {
@@ -109,7 +113,9 @@ namespace RayTracer
                 double kr = Fresnel(hit, entity.Material);
 
                 // Reflect
-                Ray reflectRay = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Reflect());
+                Vector3 reflectDirection = hit.Reflect();
+                Vector3 reflectOrigin = hit.Position + Constants.Offset * reflectDirection;
+                Ray reflectRay = new Ray(reflectOrigin, reflectDirection);
                 SceneEntity reflectEntity = FirstEntityHit(reflectRay);
                 Color reflectColor = new Color(0, 0, 0);
                 if (reflectEntity != null)
@@ -120,7 +126,9 @@ namespace RayTracer
                 }
 
                 // Refract
-                Ray refractRay = new Ray(hit.Position + 0.0000000001 * hit.Incident, hit.Refract(entity.Material));
+                Vector3 refractDirection = hit.Refract(entity.Material);
+                Vector3 refractOrigin = hit.Position + Constants.Offset * refractDirection;
+                Ray refractRay = new Ray(refractOrigin, refractDirection);
                 SceneEntity refractEntity = FirstEntityHit(refractRay);
                 Color refractColor = new Color(0, 0, 0);
                 if (refractEntity != null)
@@ -202,14 +210,13 @@ namespace RayTracer
         {
             Vector3 hitToLight = lightPosition - hitPosition;
             Vector3 direction = hitToLight.Normalized();
-            double offset = 0.0000000001;
+            Vector3 origin = hitPosition + Constants.Offset * direction;
             // Fire another ray from hit point to light source
-            // Add offset to ray origin
-            Ray ray = new Ray(hitPosition + offset * direction, direction);
+            Ray ray = new Ray(origin, direction);
             foreach (SceneEntity entity in this.entities)
             {
                 RayHit hit = entity.Intersect(ray);
-                // Check if the ray hits a closer surface
+                // Check if the ray hits a closer surface to make sure ray does not go past the light
                 if (hit != null && (hit.Position - hitPosition).LengthSq() < hitToLight.LengthSq())
                 {
                     return true;
