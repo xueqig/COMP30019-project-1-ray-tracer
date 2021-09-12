@@ -102,14 +102,21 @@ namespace RayTracer
                     Vector3 v1 = this.vertices[this.faces[i][1] - 1];
                     Vector3 v2 = this.vertices[this.faces[i][2] - 1];
 
-                    Vector3 n0 = this.vertexNormals[this.faces[i][0] - 1];
-                    Vector3 n1 = this.vertexNormals[this.faces[i][1] - 1];
-                    Vector3 n2 = this.vertexNormals[this.faces[i][2] - 1];
-
                     SceneEntity triangle = new Triangle(v0, v1, v2, this.material);
-                    // RayHit hit = triangle.Intersect(ray);
+                    RayHit hit = null;
+                    if (this.vertexNormals.Count == 0)
+                    {
+                        hit = triangle.Intersect(ray);
+                    }
+                    else
+                    {
+                        Vector3 n0 = this.vertexNormals[this.faces[i][0] - 1];
+                        Vector3 n1 = this.vertexNormals[this.faces[i][1] - 1];
+                        Vector3 n2 = this.vertexNormals[this.faces[i][2] - 1];
 
-                    RayHit hit = rayTriangleIntersect(ray, v0, v1, v2, n0, n1, n2);
+                        hit = rayTriangleIntersect(ray, v0, v1, v2, n0, n1, n2);
+                    }
+
                     if (hit != null)
                     {
                         double distanceSq = (hit.Position - ray.Origin).LengthSq();
