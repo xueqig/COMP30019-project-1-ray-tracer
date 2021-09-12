@@ -58,7 +58,7 @@ This render took **11** minutes and **47** seconds on my PC.
 I used the following command to render the image exactly as shown:
 
 ```
-dotnet run -- -f tests/final_scene.txt -o final_scene.png -x 2 
+dotnet run -- -f tests/final_scene.txt -o images/final_scene.png -x 2
 ```
 
 ## Sample outputs
