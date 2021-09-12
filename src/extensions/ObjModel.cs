@@ -163,16 +163,23 @@ namespace RayTracer
             // Check if intersection point is inside the triangle 
             Vector3 v0p = position - v0;
             double dot0 = normal.Dot(v0v1.Cross(v0p));
+            if (dot0 < 0)
+            {
+                return null;
+            }
 
             Vector3 v1v2 = v2 - v1;
             Vector3 v1p = position - v1;
             double dot1 = normal.Dot(v1v2.Cross(v1p));
+            if (dot1 < 0)
+            {
+                return null;
+            }
 
             Vector3 v2v0 = v0 - v2;
             Vector3 v2p = position - v2;
             double dot2 = normal.Dot(v2v0.Cross(v2p));
-
-            if (dot0 < 0 || dot1 < 0 || dot2 < 0)
+            if (dot2 < 0)
             {
                 return null;
             }
